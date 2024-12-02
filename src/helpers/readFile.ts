@@ -32,3 +32,15 @@ export function readNumbersIntoTwoLists(data: string) {
     list2,
   };
 }
+
+export function readLinesIntoLists(data: string) {
+  const lists: string[] = data.split('\n');
+  const numberLists: number[][] = [];
+
+  lists.forEach((list) => {
+    const items = list.split(' ');
+    const numberItems = items.map((i) => parseInt(i, 10));
+    numberLists.push(numberItems);
+  });
+  return numberLists;
+}

@@ -1,5 +1,9 @@
 import { createFrequencyMap } from '../createFrequencyMap';
-import { readInput, readNumbersIntoTwoLists } from '../readFile';
+import {
+  readInput,
+  readLinesIntoLists,
+  readNumbersIntoTwoLists,
+} from '../readFile';
 
 test('readinput works for one line', async () => {
   const input = await readInput('helpers/test/test-data/oneline_data.txt');
@@ -25,4 +29,19 @@ test('create frequency map retuns correct numbers', () => {
     5: 1,
     9: 1,
   });
+});
+
+test('read lines into number lists', async () => {
+  const expected = [
+    [7, 6, 4, 2, 1],
+    [1, 2, 7, 8, 9],
+    [9, 7, 6, 2, 1],
+    [1, 3, 2, 4, 5],
+    [8, 6, 4, 4, 1],
+    [1, 3, 6, 7, 9],
+  ];
+
+  const input = await readInput('helpers/test/test-data/2_fake_data.txt');
+  const numberLists = readLinesIntoLists(input);
+  expect(numberLists).toEqual(expected);
 });
