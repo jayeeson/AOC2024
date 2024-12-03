@@ -7,10 +7,12 @@ enum FirstSign {
   DECREASING,
 }
 
-function testListForGradualChanges(list: number[]): {
+interface SingleResult {
   index: number;
   safe: boolean;
-} {
+}
+
+function testListForGradualChanges(list: number[]): SingleResult {
   let signChange: FirstSign | undefined;
   for (let i = 0; i < list.length - 1; ++i) {
     const delta = list[i + 1] - list[i];
