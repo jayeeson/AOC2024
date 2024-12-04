@@ -161,72 +161,38 @@ export function countXShapedStringsInGrid(
   grid: string[]
 ) {
   let found = 0;
-  const foundCellCenters: Cell[] = [];
-
   const width = grid.length;
   const height = grid[0].length;
   for (let y = 0; y < height; ++y) {
     for (let x = 0; x < width; ++x) {
-      const eastDirections = [Direction.NORTHEAST, Direction.SOUTHEAST];
-      const eastDirectionsAsNumbers = eastDirections.map((d) => d as number);
-      for (let dirIndex = 0; dirIndex < Direction.LENGTH; ++dirIndex) {
-        if (!eastDirectionsAsNumbers.includes(dirIndex)) {
-          continue;
-        }
-        const functionInput: IPropsStringFromCoordinateAndDirection = {
-          input: grid,
-          cell: {
-            x,
-            y,
-          },
-          size: {
-            width,
-            height,
-          },
-          length: stringToFind.length,
-          direction: dirIndex as Direction,
-        };
-        const foundString =
-          createStringFromCoordinateAndDirection(functionInput);
+      const functionInput: IPropsStringFromCoordinateAndDirection = {
+        input: grid,
+        cell: {
+          x,
+          y,
+        },
+        size: {
+          width,
+          height,
+        },
+        length: stringToFind.length,
+        direction: Direction.SOUTHEAST,
+      };
+      const foundString = createStringFromCoordinateAndDirection(functionInput);
+      if (
+        foundString === stringToFind ||
+        foundString === reverseString(stringToFind)
+      ) {
+        const foundCounterMas = createStringFromCoordinateAndDirection({
+          ...functionInput,
+          cell: { x, y: y + 2 },
+          direction: Direction.NORTHEAST,
+        });
         if (
-          foundString === stringToFind ||
-          foundString === reverseString(stringToFind)
+          foundCounterMas === stringToFind ||
+          foundCounterMas === reverseString(stringToFind)
         ) {
-          if ((dirIndex as Direction) === Direction.NORTHEAST) {
-            const possibleCellCenter = { x: x + 1, y: y - 1 };
-            if (arrayIncludesDeep(foundCellCenters, possibleCellCenter)) {
-              continue;
-            }
-            const foundWest = createStringFromCoordinateAndDirection({
-              ...functionInput,
-              cell: { x, y: y - 2 },
-              direction: Direction.SOUTHEAST,
-            });
-            if (
-              foundWest === stringToFind ||
-              foundWest === reverseString(stringToFind)
-            ) {
-              ++found;
-              foundCellCenters.push({ x: x + 1, y: y - 1 });
-            }
-          } else {
-            const possibleCellCenter = { x: x + 1, y: y + 1 };
-            if (arrayIncludesDeep(foundCellCenters, possibleCellCenter)) {
-              continue;
-            }
-            const foundWest = createStringFromCoordinateAndDirection({
-              ...functionInput,
-              cell: { x, y: y + 2 },
-              direction: Direction.NORTHEAST,
-            });
-            if (
-              foundWest === stringToFind ||
-              foundWest === reverseString(stringToFind)
-            ) {
-              ++found;
-              foundCellCenters.push({ x: x + 1, y: y + 1 });
-            }
-          }
+          ++found;
         }
       }
     }
