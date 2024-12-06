@@ -73,7 +73,7 @@ test('can find XMAS in all directions', () => {
 });
 
 test('can find XMAS in all directions from file', async () => {
-  const fileInput = await readInput('helpers/test/test-data/4_fake_data.txt');
+  const fileInput = await readInput('../test/test-data/4_fake_data.txt');
   const grid = input.split('\n');
 
   const numberXmases = countFoundStringsInGrid('XMAS', grid);

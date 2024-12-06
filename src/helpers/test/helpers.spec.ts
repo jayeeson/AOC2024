@@ -1,3 +1,4 @@
+import { doInPlaceArrayItemSwap } from '../arrayItemSwap';
 import { createFrequencyMap } from '../createFrequencyMap';
 import {
   readInput,
@@ -44,4 +45,10 @@ test('read lines into number lists', async () => {
   const input = await readInput('helpers/test/test-data/2_fake_data.txt');
   const numberLists = readLinesIntoLists(input);
   expect(numberLists).toEqual(expected);
+});
+
+test('can swap inside array', () => {
+  const array = [1, 2, 3];
+  doInPlaceArrayItemSwap(array, 0, 2);
+  expect(array).toEqual([3, 2, 1]);
 });

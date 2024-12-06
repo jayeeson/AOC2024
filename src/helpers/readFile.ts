@@ -38,7 +38,7 @@ export function readLinesIntoLists(data: string) {
   const numberLists: number[][] = [];
 
   lists.forEach((list) => {
-    const items = list.split(' ');
+    const items = list.split(/[ ,]/);
     const numberItems = items.map((i) => parseInt(i, 10));
     numberLists.push(numberItems);
   });
