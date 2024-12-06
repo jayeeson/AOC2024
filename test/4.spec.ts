@@ -4,7 +4,7 @@ import {
   countFoundStringsInGrid,
   countXShapedStringsInGrid,
   createStringFromCoordinateAndDirection,
-  Direction,
+  Direction8Points,
   IPropsStringFromCoordinateAndDirection,
 } from '../src/solutions/4';
 
@@ -21,31 +21,95 @@ S.S.S.S.SS
 
 interface TestCase1 {
   cell: Cell;
-  direction: Direction;
+  direction: Direction8Points;
   expected: string | undefined;
 }
 
 test.each<TestCase1>([
-  { cell: { x: 3, y: 3 }, direction: Direction.NORTH, expected: '.SM.' },
-  { cell: { x: 3, y: 2 }, direction: Direction.NORTH, expected: undefined },
-  { cell: { x: 0, y: 3 }, direction: Direction.EAST, expected: '..A.' },
-  { cell: { x: 1, y: 3 }, direction: Direction.EAST, expected: undefined },
-  { cell: { x: 3, y: 3 }, direction: Direction.WEST, expected: '.A..' },
-  { cell: { x: 2, y: 3 }, direction: Direction.WEST, expected: undefined },
-  { cell: { x: 3, y: 0 }, direction: Direction.SOUTH, expected: '.MS.' },
-  { cell: { x: 3, y: 1 }, direction: Direction.SOUTH, expected: undefined },
-  { cell: { x: 0, y: 3 }, direction: Direction.NORTHEAST, expected: '..A.' },
-  { cell: { x: 1, y: 3 }, direction: Direction.NORTHEAST, expected: undefined },
-  { cell: { x: 0, y: 2 }, direction: Direction.NORTHEAST, expected: undefined },
-  { cell: { x: 3, y: 3 }, direction: Direction.NORTHWEST, expected: '..S.' },
-  { cell: { x: 2, y: 3 }, direction: Direction.NORTHWEST, expected: undefined },
-  { cell: { x: 1, y: 2 }, direction: Direction.NORTHWEST, expected: undefined },
-  { cell: { x: 0, y: 0 }, direction: Direction.SOUTHEAST, expected: '.S..' },
-  { cell: { x: 1, y: 0 }, direction: Direction.SOUTHEAST, expected: undefined },
-  { cell: { x: 0, y: 1 }, direction: Direction.SOUTHEAST, expected: undefined },
-  { cell: { x: 3, y: 0 }, direction: Direction.SOUTHWEST, expected: '.A..' },
-  { cell: { x: 2, y: 0 }, direction: Direction.SOUTHWEST, expected: undefined },
-  { cell: { x: 3, y: 1 }, direction: Direction.SOUTHWEST, expected: undefined },
+  { cell: { x: 3, y: 3 }, direction: Direction8Points.NORTH, expected: '.SM.' },
+  {
+    cell: { x: 3, y: 2 },
+    direction: Direction8Points.NORTH,
+    expected: undefined,
+  },
+  { cell: { x: 0, y: 3 }, direction: Direction8Points.EAST, expected: '..A.' },
+  {
+    cell: { x: 1, y: 3 },
+    direction: Direction8Points.EAST,
+    expected: undefined,
+  },
+  { cell: { x: 3, y: 3 }, direction: Direction8Points.WEST, expected: '.A..' },
+  {
+    cell: { x: 2, y: 3 },
+    direction: Direction8Points.WEST,
+    expected: undefined,
+  },
+  { cell: { x: 3, y: 0 }, direction: Direction8Points.SOUTH, expected: '.MS.' },
+  {
+    cell: { x: 3, y: 1 },
+    direction: Direction8Points.SOUTH,
+    expected: undefined,
+  },
+  {
+    cell: { x: 0, y: 3 },
+    direction: Direction8Points.NORTHEAST,
+    expected: '..A.',
+  },
+  {
+    cell: { x: 1, y: 3 },
+    direction: Direction8Points.NORTHEAST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 0, y: 2 },
+    direction: Direction8Points.NORTHEAST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 3, y: 3 },
+    direction: Direction8Points.NORTHWEST,
+    expected: '..S.',
+  },
+  {
+    cell: { x: 2, y: 3 },
+    direction: Direction8Points.NORTHWEST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 1, y: 2 },
+    direction: Direction8Points.NORTHWEST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 0, y: 0 },
+    direction: Direction8Points.SOUTHEAST,
+    expected: '.S..',
+  },
+  {
+    cell: { x: 1, y: 0 },
+    direction: Direction8Points.SOUTHEAST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 0, y: 1 },
+    direction: Direction8Points.SOUTHEAST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 3, y: 0 },
+    direction: Direction8Points.SOUTHWEST,
+    expected: '.A..',
+  },
+  {
+    cell: { x: 2, y: 0 },
+    direction: Direction8Points.SOUTHWEST,
+    expected: undefined,
+  },
+  {
+    cell: { x: 3, y: 1 },
+    direction: Direction8Points.SOUTHWEST,
+    expected: undefined,
+  },
 ])('can extract string from cell and direction, %s', (testCase) => {
   // test case:
 

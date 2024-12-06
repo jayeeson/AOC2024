@@ -7,7 +7,7 @@ export function countFoundStringsInGrid(stringToFind: string, grid: string[]) {
   const height = grid[0].length;
   for (let y = 0; y < height; ++y) {
     for (let x = 0; x < width; ++x) {
-      for (let dirIndex = 0; dirIndex < Direction.LENGTH; ++dirIndex) {
+      for (let dirIndex = 0; dirIndex < Direction8Points.LENGTH; ++dirIndex) {
         const functionInput: IPropsStringFromCoordinateAndDirection = {
           input: grid,
           cell: {
@@ -19,7 +19,7 @@ export function countFoundStringsInGrid(stringToFind: string, grid: string[]) {
             height,
           },
           length: stringToFind.length,
-          direction: dirIndex as Direction,
+          direction: dirIndex as Direction8Points,
         };
         const foundString =
           createStringFromCoordinateAndDirection(functionInput);
@@ -42,11 +42,11 @@ export interface Cell {
   y: number;
 }
 
-export enum Direction {
-  WEST,
+export enum Direction8Points {
   NORTH,
   EAST,
   SOUTH,
+  WEST,
   NORTHWEST,
   NORTHEAST,
   SOUTHEAST,
@@ -59,7 +59,7 @@ export interface IPropsStringFromCoordinateAndDirection {
   size: Size;
   cell: Cell;
   length: number;
-  direction: Direction;
+  direction: Direction8Points;
 }
 
 function reverseString(str: string) {
@@ -77,19 +77,19 @@ export function createStringFromCoordinateAndDirection({
 }: IPropsStringFromCoordinateAndDirection) {
   // WEST
   switch (direction) {
-    case Direction.WEST:
+    case Direction8Points.WEST:
       if (cell.x >= length - 1) {
         const str = input[cell.y].slice(cell.x - 3, cell.x + 1);
         return reverseString(str);
       }
       break;
-    case Direction.EAST: {
+    case Direction8Points.EAST: {
       if (cell.x <= size.width - length) {
         return input[cell.y].slice(cell.x, cell.x + length);
       }
       break;
     }
-    case Direction.NORTH:
+    case Direction8Points.NORTH:
       if (cell.y >= length - 1) {
         let strArr = [];
         for (let i = 0; i < length; ++i) {
@@ -98,7 +98,7 @@ export function createStringFromCoordinateAndDirection({
         return strArr.join('');
       }
       break;
-    case Direction.SOUTH:
+    case Direction8Points.SOUTH:
       if (cell.y <= size.height - length) {
         let strArr = [];
         for (let i = 0; i < length; ++i) {
@@ -107,7 +107,7 @@ export function createStringFromCoordinateAndDirection({
         return strArr.join('');
       }
       break;
-    case Direction.NORTHWEST:
+    case Direction8Points.NORTHWEST:
       if (cell.x >= length - 1 && cell.y >= length - 1) {
         let strArr = [];
         for (let i = 0; i < length; ++i) {
@@ -116,7 +116,7 @@ export function createStringFromCoordinateAndDirection({
         return strArr.join('');
       }
       break;
-    case Direction.NORTHEAST:
+    case Direction8Points.NORTHEAST:
       if (cell.x <= size.width - length && cell.y >= length - 1) {
         let strArr = [];
         for (let i = 0; i < length; ++i) {
@@ -125,7 +125,7 @@ export function createStringFromCoordinateAndDirection({
         return strArr.join('');
       }
       break;
-    case Direction.SOUTHWEST:
+    case Direction8Points.SOUTHWEST:
       if (cell.x >= length - 1 && cell.y <= size.height - length) {
         let strArr = [];
         for (let i = 0; i < length; ++i) {
@@ -134,7 +134,7 @@ export function createStringFromCoordinateAndDirection({
         return strArr.join('');
       }
       break;
-    case Direction.SOUTHEAST:
+    case Direction8Points.SOUTHEAST:
       if (cell.x <= size.width - length && cell.y <= size.height - length) {
         let strArr = [];
         for (let i = 0; i < length; ++i) {
@@ -176,7 +176,7 @@ export function countXShapedStringsInGrid(
           height,
         },
         length: stringToFind.length,
-        direction: Direction.SOUTHEAST,
+        direction: Direction8Points.SOUTHEAST,
       };
       const foundString = createStringFromCoordinateAndDirection(functionInput);
       if (
@@ -186,7 +186,7 @@ export function countXShapedStringsInGrid(
         const foundCounterMas = createStringFromCoordinateAndDirection({
           ...functionInput,
           cell: { x, y: y + 2 },
-          direction: Direction.NORTHEAST,
+          direction: Direction8Points.NORTHEAST,
         });
         if (
           foundCounterMas === stringToFind ||

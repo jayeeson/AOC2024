@@ -33,8 +33,12 @@ export function readNumbersIntoTwoLists(data: string) {
   };
 }
 
+export const splitStringAtEOL = (input: string) => {
+  return input.split('\n');
+};
+
 export function readLinesIntoLists(data: string) {
-  const lists: string[] = data.split('\n');
+  const lists: string[] = splitStringAtEOL(data);
   const numberLists: number[][] = [];
 
   lists.forEach((list) => {
