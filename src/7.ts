@@ -1,3 +1,6 @@
+import { readInput, splitStringAtEOL } from './helpers/readFile';
+import { sumOfArray } from './solutions/1';
+
 export interface Calculation {
   answer: number;
   digits: number[];
@@ -6,10 +9,17 @@ export interface Calculation {
 enum CalculationOperator {
   ADD,
   MULTIPLY,
+  CONCATENATE,
 }
-export const CALCULATION_OPERATORS = [
+export const CALCULATION_OPERATORS_1 = [
   CalculationOperator.ADD,
   CalculationOperator.MULTIPLY,
+];
+
+export const CALCULATION_OPERATORS_2 = [
+  CalculationOperator.ADD,
+  CalculationOperator.MULTIPLY,
+  CalculationOperator.CONCATENATE,
 ];
 
 export const stringToCalculation = (input: string): Calculation => {
@@ -40,14 +50,19 @@ export const doRecursiveCalculationLookingForAnswer = (
   let recursiveAns = 0;
   for (const operator of operators) {
     if (numbers.length === 2) {
-      if (operator === CalculationOperator.ADD) {
-        if (first + second === answer) {
+      if (first + second === answer) {
+        validity.valid = true;
+        return first + second;
+      }
+      if (first * second === answer) {
+        validity.valid = true;
+        return first * second;
+      }
+      if (operators.includes(CalculationOperator.CONCATENATE)) {
+        const concatenated = parseInt(first.toString() + second.toString(), 10);
+        if (concatenated === answer) {
           validity.valid = true;
-          return first + second;
-        }
-        if (first * second === answer) {
-          validity.valid = true;
-          return first * second;
+          return concatenated;
         }
       }
       return 0;
@@ -58,29 +73,69 @@ export const doRecursiveCalculationLookingForAnswer = (
         answer,
         validity
       );
-    } /*if (operator === CalculationOperator.MULTIPLY) */ else {
+    } else if (operator === CalculationOperator.MULTIPLY) {
       recursiveAns = doRecursiveCalculationLookingForAnswer(
         operators,
         [first * second, ...rest],
         answer,
         validity
       );
-      return recursiveAns;
+    } else if (operator === CalculationOperator.CONCATENATE) {
+      const concatenated = parseInt(first.toString() + second.toString(), 10);
+      recursiveAns = doRecursiveCalculationLookingForAnswer(
+        operators,
+        [concatenated, ...rest],
+        answer,
+        validity
+      );
     }
   }
   return recursiveAns;
 };
 
-export const isValidCalculation = (calculation: Calculation) => {
+export const isValidCalculation = (
+  calculation: Calculation,
+  calculationOperators: CalculationOperator[] = CALCULATION_OPERATORS_1
+) => {
   const validity: RecursiveCalcAnswer = { valid: false };
-  const calculationAnswer = doRecursiveCalculationLookingForAnswer(
-    CALCULATION_OPERATORS,
+  doRecursiveCalculationLookingForAnswer(
+    calculationOperators,
     calculation.digits,
     calculation.answer,
     validity
   );
   return {
     valid: validity.valid,
-    answer: calculationAnswer,
+    answer: calculation.answer,
   };
+};
+
+export const solution7_1 = async () => {
+  const input = await readInput('../data/7_input.txt');
+  const calculationStrings = splitStringAtEOL(input);
+  const calculations: Calculation[] = calculationStrings.map((calc) =>
+    stringToCalculation(calc)
+  );
+  const validCalculations = calculations.map((calc) =>
+    isValidCalculation(calc, CALCULATION_OPERATORS_1)
+  );
+  const trueValidCalculations = validCalculations.filter((calc) => calc.valid);
+  const calibrationResults = trueValidCalculations.map((calc) => calc.answer);
+  const calibrationResult = sumOfArray(calibrationResults);
+  return calibrationResult;
+};
+
+export const solution7_2 = async () => {
+  const input = await readInput('../data/7_input.txt');
+  const calculationStrings = splitStringAtEOL(input);
+  const calculations: Calculation[] = calculationStrings.map((calc) =>
+    stringToCalculation(calc)
+  );
+  const validCalculations = calculations.map((calc) =>
+    isValidCalculation(calc, CALCULATION_OPERATORS_2)
+  );
+  const trueValidCalculations = validCalculations.filter((calc) => calc.valid);
+  const calibrationResults = trueValidCalculations.map((calc) => calc.answer);
+  const calibrationResult = sumOfArray(calibrationResults);
+  return calibrationResult;
 };
