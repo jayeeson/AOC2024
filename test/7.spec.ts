@@ -4,7 +4,7 @@ import {
   CALCULATION_OPERATORS_2,
   isValidCalculation,
   stringToCalculation,
-} from '../src/7';
+} from '../src/solutions/7';
 import { splitStringAtEOL } from '../src/helpers/readFile';
 import { sumOfArray } from '../src/solutions/1';
 

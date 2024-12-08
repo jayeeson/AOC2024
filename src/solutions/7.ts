@@ -1,5 +1,5 @@
-import { readInput, splitStringAtEOL } from './helpers/readFile';
-import { sumOfArray } from './solutions/1';
+import { readInput, splitStringAtEOL } from '../helpers/readFile';
+import { sumOfArray } from './1';
 
 export interface Calculation {
   answer: number;
