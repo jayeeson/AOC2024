@@ -87,7 +87,7 @@ export const getDefragmentedLayoutWholeFile = (layout: Block[]) => {
     }
 
     let freeSize = 0;
-    while (forwardIt < backwardIt) {
+    while (forwardIt <= backwardIt) {
       if (defragmented[forwardIt].id === undefined) {
         ++freeSize;
       }

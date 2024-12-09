@@ -145,10 +145,26 @@ const expectedWholeFile = [
   { id: undefined },
 ];
 
-test('can move whole files only in defragmentation', () => {
-  const layout = getLayoutFromDiskMap(testInput2);
-  const defragmentedLayout = getDefragmentedLayoutWholeFile(layout);
-  expect(defragmentedLayout).toMatchObject(expectedWholeFile);
-  const checksum = calculateDefragmentedChecksum(defragmentedLayout);
-  expect(checksum).toBe(2858);
-});
+test.each([
+  { input: testInput2, expected: expectedWholeFile, expectedChecksum: 2858 },
+  {
+    input: '122',
+    expected: [
+      { id: 0 },
+      { id: 1 },
+      { id: 1 },
+      { id: undefined },
+      { id: undefined },
+    ],
+    expectedChecksum: 3,
+  },
+])(
+  'can move whole files only in defragmentation',
+  ({ input, expected, expectedChecksum }) => {
+    const layout = getLayoutFromDiskMap(input);
+    const defragmentedLayout = getDefragmentedLayoutWholeFile(layout);
+    expect(defragmentedLayout).toMatchObject(expected);
+    const checksum = calculateDefragmentedChecksum(defragmentedLayout);
+    expect(checksum).toBe(expectedChecksum);
+  }
+);
