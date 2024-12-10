@@ -1,6 +1,6 @@
 import { Cell, Size } from '../solutions/4';
 
-export const getMapSize = (input: string[]): Size => {
+export const getMapSize = <T extends string | number[]>(input: T[]): Size => {
   if (input.length < 1 && input[0].length < 1) {
     throw new Error('input must have at least one row');
   }

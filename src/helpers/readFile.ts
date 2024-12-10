@@ -48,3 +48,15 @@ export function readLinesIntoLists(data: string) {
   });
   return numberLists;
 }
+
+export function readDigitsIntoLists(data: string) {
+  const lists: string[] = splitStringAtEOL(data);
+  const numberLists: number[][] = [];
+
+  lists.forEach((list) => {
+    const items = list.split('');
+    const numberItems = items.map((i) => parseInt(i, 10));
+    numberLists.push(numberItems);
+  });
+  return numberLists;
+}
