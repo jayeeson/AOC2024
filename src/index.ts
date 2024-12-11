@@ -8,6 +8,7 @@ import { solution6_1, solution6_2 } from './solutions/6';
 import { solution8_1, solution8_2 } from './solutions/8';
 import { solution9_1, solution9_2 } from './solutions/9';
 import { solution10_1, solution10_2 } from './solutions/10';
+import { solution11_1, solution11_2 } from './solutions/11';
 
 (async () => {
   // console.log('solution1_1: ', await solution1_1());
@@ -28,6 +29,8 @@ import { solution10_1, solution10_2 } from './solutions/10';
   // console.log('solution8_2: ', await solution8_2());
   // console.log('solution9_1: ', await solution9_1());
   // console.log('solution9_2: ', await solution9_2());
-  console.log('solution10_1: ', await solution10_1());
-  console.log('solution10_2: ', await solution10_2());
+  // console.log('solution10_1: ', await solution10_1());
+  // console.log('solution10_2: ', await solution10_2());
+  // console.log('solution11_1: ', await solution11_1());
+  console.log('solution11_2: ', await solution11_2());
 })();

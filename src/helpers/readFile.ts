@@ -60,3 +60,11 @@ export function readDigitsIntoLists(data: string) {
   });
   return numberLists;
 }
+
+export const readInputStringIntoNumbers = (
+  input: string,
+  separator: string = ' '
+): number[] => {
+  const splits = input.split(separator);
+  return splits.map((s) => parseInt(s, 10));
+};
