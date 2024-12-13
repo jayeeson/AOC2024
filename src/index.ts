@@ -9,6 +9,7 @@ import { solution8_1, solution8_2 } from './solutions/8';
 import { solution9_1, solution9_2 } from './solutions/9';
 import { solution10_1, solution10_2 } from './solutions/10';
 import { solution11_1, solution11_2 } from './solutions/11';
+import { solution12_1 } from './solutions/12';
 
 (async () => {
   // console.log('solution1_1: ', await solution1_1());
@@ -32,5 +33,6 @@ import { solution11_1, solution11_2 } from './solutions/11';
   // console.log('solution10_1: ', await solution10_1());
   // console.log('solution10_2: ', await solution10_2());
   // console.log('solution11_1: ', await solution11_1());
-  console.log('solution11_2: ', await solution11_2());
+  // console.log('solution11_2: ', await solution11_2());
+  console.log('solution12_1: ', await solution12_1());
 })();

@@ -51,7 +51,7 @@ export const findAllTrailheads = (
   return uniqueTrails;
 };
 
-const Direction4PointsArray: Readonly<Direction4Points[]> = [
+export const Direction4PointsArray: Readonly<Direction4Points[]> = [
   Direction4Points.NORTH,
   Direction4Points.EAST,
   Direction4Points.SOUTH,
