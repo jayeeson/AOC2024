@@ -65,6 +65,7 @@ export const readInputStringIntoNumbers = (
   input: string,
   separator: string = ' '
 ): number[] => {
-  const splits = input.split(separator);
+  const noNewLines = input.replaceAll('\n', '');
+  const splits = noNewLines.split(separator);
   return splits.map((s) => parseInt(s, 10));
 };

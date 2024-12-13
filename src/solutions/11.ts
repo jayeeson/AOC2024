@@ -1,4 +1,12 @@
 import { readInput, readInputStringIntoNumbers } from '../helpers/readFile';
+import {
+  writeStringArrayToFile,
+  writeToFile,
+} from '../helpers/writeStringArray';
+
+export interface StoneValuesDict {
+  [key: number]: number;
+}
 
 const STONE_FUNCTIONS = {
   0: (): 1 => 1,
@@ -17,23 +25,40 @@ const determineStoneRule = (value: number) => {
   return 2;
 };
 
-export const applyStoneFunction = (value: number): number[] => {
+export const applyStoneFunction = (
+  value: number
+): { newValue: number[]; split: boolean } => {
   const rule = determineStoneRule(value);
   const func = STONE_FUNCTIONS[rule];
   const newValue = func(value);
   if (typeof newValue !== 'number') {
-    return newValue;
+    return {
+      newValue,
+      split: true,
+    };
   }
-  return [newValue];
+  return {
+    newValue: [newValue],
+    split: false,
+  };
 };
 
-export const applyStoneFunctionToList = (values: number[]): number[] => {
+export const applyStoneFunctionToList = (
+  values: number[]
+): { newValues: number[]; numberSplits: number } => {
   const newValues: number[] = [];
+  let splits = 0;
   values.forEach((v) => {
     const out = applyStoneFunction(v);
-    newValues.push(...out);
+    newValues.push(...out.newValue);
+    if (out.split) {
+      ++splits;
+    }
   });
-  return newValues;
+  return {
+    newValues: newValues,
+    numberSplits: splits,
+  };
 };
 
 export const applyStoneFunctionManyTimes = (
@@ -41,8 +66,13 @@ export const applyStoneFunctionManyTimes = (
   times: number
 ) => {
   let valueStore: number[] = values.slice();
+  let numberSplits = 0;
   for (let i = 0; i < times; ++i) {
-    valueStore = applyStoneFunctionToList(valueStore);
+    const out = applyStoneFunctionToList(valueStore);
+    valueStore = out.newValues;
+    if (out.numberSplits > 0) {
+      numberSplits += out.numberSplits;
+    }
   }
   return valueStore;
 };
@@ -54,24 +84,58 @@ export const solution11_1 = async () => {
   return result.length;
 };
 
-export const applyStoneFunctionManyManyManyManyTimes = (
-  values: number[],
+// mutates the dict
+export const addListToStoneValuesDict = (
+  list: number[],
+  dict: StoneValuesDict,
+  count: number = 1
+) => {
+  for (const v of list) {
+    if (!(v in dict)) {
+      dict[v] = count;
+    } else {
+      dict[v] = dict[v] + count;
+    }
+  }
+  return dict;
+};
+
+export const applyStoneFunctionToDict = (
+  values: StoneValuesDict
+): StoneValuesDict => {
+  const newValues: StoneValuesDict = {};
+  for (const num in values) {
+    const out = applyStoneFunction(parseInt(num));
+    addListToStoneValuesDict(out.newValue, newValues, values[num]);
+  }
+  return newValues;
+};
+
+// modifies the dict
+export const applyStoneFunctionToDictManyTimes = (
+  dict: StoneValuesDict,
   times: number
 ) => {
-  let valueStore: number[] = values.slice();
-  for (let i = 0; i < Math.min(times, 30); ++i) {
-    valueStore = applyStoneFunctionToList(valueStore);
+  for (let i = 0; i < times; ++i) {
+    dict = applyStoneFunctionToDict(dict);
   }
-  if (times - 30 > 0) {
-    let manyValueStores: number[][];
-    for (let i = 0; i < 100; ++i) {}
+  return dict;
+};
+
+export const getNumberOfStonesFromDict = (dict: StoneValuesDict) => {
+  let count = 0;
+  for (const key in dict) {
+    count += dict[parseInt(key)];
   }
-  valueStore;
+  return count;
 };
 
 export const solution11_2 = async () => {
   const input = await readInput('../data/11_input.txt');
-  const nums = readInputStringIntoNumbers(input);
-  const result = applyStoneFunctionManyTimes(nums, 75);
-  return result.length;
+  const numsList = readInputStringIntoNumbers(input);
+  let dict = {};
+  addListToStoneValuesDict(numsList, dict);
+  dict = applyStoneFunctionToDictManyTimes(dict, 75);
+  const count = getNumberOfStonesFromDict(dict);
+  return count;
 };
