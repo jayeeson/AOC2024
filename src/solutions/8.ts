@@ -1,9 +1,8 @@
 // 1. create a map of locations of unique frequency antennas
 // 2.
 
-import { getMapSize, isInMap } from '../helpers/map';
+import { Cell, getCellDiff, getMapSize, isInMap, Size } from '../helpers/map';
 import { readInput, splitStringAtEOL } from '../helpers/readFile';
-import { Cell, Size } from './4';
 
 export interface AntennaLocations {
   [key: string | number]: Cell[];
@@ -32,20 +31,13 @@ export const getAntennaLocations = (lines: string[]): AntennaLocations => {
   return antennaLocations;
 };
 
-export const getDiffOfAntennaLocations = (
-  antenna1: Cell,
-  antenna2: Cell
-): Cell => {
-  return { x: antenna2.x - antenna1.x, y: antenna2.y - antenna1.y };
-};
-
 export const getAntinodesOfLocations = (
   antenna1: Cell,
   antenna2: Cell,
   mapSize: Size,
   resonance: boolean = false
 ): Cell[] => {
-  const diff = getDiffOfAntennaLocations(antenna1, antenna2);
+  const diff = getCellDiff(antenna1, antenna2);
   const antinodes: Cell[] = [];
   for (let i = resonance ? 0 : 1; i <= (resonance ? 100 : 1); ++i) {
     const possibleAntinode1 = {

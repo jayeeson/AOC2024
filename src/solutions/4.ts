@@ -1,4 +1,5 @@
 import { arrayIncludesDeep } from '../helpers/deepEqual';
+import { Cell, Direction8Points, Size } from '../helpers/map';
 import { readInput } from '../helpers/readFile';
 
 export function countFoundStringsInGrid(stringToFind: string, grid: string[]) {
@@ -30,28 +31,6 @@ export function countFoundStringsInGrid(stringToFind: string, grid: string[]) {
     }
   }
   return found;
-}
-
-export interface Size {
-  width: number;
-  height: number;
-}
-
-export interface Cell {
-  x: number;
-  y: number;
-}
-
-export enum Direction8Points {
-  NORTH,
-  EAST,
-  SOUTH,
-  WEST,
-  NORTHWEST,
-  NORTHEAST,
-  SOUTHEAST,
-  SOUTHWEST,
-  LENGTH,
 }
 
 export interface IPropsStringFromCoordinateAndDirection {

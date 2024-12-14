@@ -1,8 +1,13 @@
-import { getMapSize, isInMap } from '../helpers/map';
+import {
+  Cell,
+  Direction4Points,
+  getMapSize,
+  isInMap,
+  MapLines,
+  Size,
+} from '../helpers/map';
 import { readInput, splitStringAtEOL } from '../helpers/readFile';
 import { sumOfArray } from './1';
-import { Cell, Size } from './4';
-import { Direction4Points, MapLines } from './6';
 
 export interface Trail {
   head: Cell;

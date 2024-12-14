@@ -1,10 +1,9 @@
+import { Cell, Direction8Points } from '../src/helpers/map';
 import { readInput } from '../src/helpers/readFile';
 import {
-  Cell,
   countFoundStringsInGrid,
   countXShapedStringsInGrid,
   createStringFromCoordinateAndDirection,
-  Direction8Points,
   IPropsStringFromCoordinateAndDirection,
 } from '../src/solutions/4';
 

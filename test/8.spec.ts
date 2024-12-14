@@ -1,11 +1,10 @@
-import { getMapSize } from '../src/helpers/map';
+import { getCellDiff, getMapSize } from '../src/helpers/map';
 import { splitStringAtEOL } from '../src/helpers/readFile';
 import {
   AntinodeLocations,
   createMapOfAllAntinodeLocations,
   getAntennaLocations,
   getAntinodesOfLocations,
-  getDiffOfAntennaLocations,
 } from '../src/solutions/8';
 
 const testInput1 = `............
@@ -51,10 +50,7 @@ test.each([
 ])('can get diff of map locations', (input) => {
   const inputStrings = splitStringAtEOL(input);
   const antennaLocations = getAntennaLocations(inputStrings);
-  const diff = getDiffOfAntennaLocations(
-    antennaLocations['a'][0],
-    antennaLocations['a'][1]
-  );
+  const diff = getCellDiff(antennaLocations['a'][0], antennaLocations['a'][1]);
   expect(diff).toMatchObject({ x: -1, y: 1 });
 });
 

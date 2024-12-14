@@ -1,7 +1,7 @@
+import { Direction4Points } from '../src/helpers/map';
 import { splitStringAtEOL } from '../src/helpers/readFile';
 import {
   countNumberFinalGuardPositions,
-  Direction4Points,
   drawMaxLinePath,
   findNextObstacleOrExitAndUpdateMap,
   findNumberOfLoopablePositions,

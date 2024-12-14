@@ -1,8 +1,4 @@
 import { readInput, readInputStringIntoNumbers } from '../helpers/readFile';
-import {
-  writeStringArrayToFile,
-  writeToFile,
-} from '../helpers/writeStringArray';
 
 export interface StoneValuesDict {
   [key: number]: number;

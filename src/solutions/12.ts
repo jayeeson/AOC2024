@@ -1,10 +1,18 @@
 import { deepEqual } from '../helpers/deepEqual';
-import { getMapSize, isInMap } from '../helpers/map';
+import {
+  Cell,
+  cellToString,
+  createMoveString,
+  Direction4Points,
+  getCellOneAwayByDirection,
+  getDirectionFromNeighboringCell1ToCell2,
+  getMapSize,
+  isInMap,
+  Size,
+} from '../helpers/map';
 import { readInput, splitStringAtEOL } from '../helpers/readFile';
 import { sumOfArray } from './1';
 import { Direction4PointsArray } from './10';
-import { Cell, Size } from './4';
-import { Direction4Points } from './6';
 
 export interface GardenRegionSpecs {
   area: number;
@@ -19,24 +27,6 @@ export interface GardenRegionSpecsMap {
 export interface GardenRegionCells {
   [key: string]: Cell; // key is unique `x-y`
 }
-
-const getCellOneAwayByDirection = (
-  direction: Direction4Points,
-  position: Cell
-) => {
-  switch (direction) {
-    case Direction4Points.NORTH:
-      return { x: position.x, y: position.y - 1 };
-    case Direction4Points.EAST:
-      return { x: position.x + 1, y: position.y };
-    case Direction4Points.SOUTH:
-      return { x: position.x, y: position.y + 1 };
-    case Direction4Points.WEST:
-      return { x: position.x - 1, y: position.y };
-    default:
-      throw new Error('impossible direction');
-  }
-};
 
 export const findFirstCellNotInMap = (
   size: Size,
@@ -136,32 +126,6 @@ const calculatePerimeterOfThisCell = (
   return perimeter;
 };
 
-const getDirectionFromNeighboringCell1ToCell2 = (
-  cell1: Cell,
-  cell2: Cell
-): Direction4Points => {
-  if (Math.abs(cell1.x - cell2.x) + Math.abs(cell1.y - cell2.y) !== 1) {
-    throw new Error('cells must be exactly one apart in x or y direction');
-  }
-
-  const diffX = cell2.x - cell1.x;
-  if (diffX === 1) {
-    return Direction4Points.EAST;
-  }
-  if (diffX === -1) {
-    return Direction4Points.WEST;
-  }
-
-  const diffY = cell2.y - cell1.y;
-  if (diffY === 1) {
-    return Direction4Points.SOUTH;
-  }
-  if (diffY === -1) {
-    return Direction4Points.NORTH;
-  }
-  throw new Error('you did something WRONG');
-};
-
 export const getInitialNeighboringCell = (
   currentCell: Cell,
   cells: Cell[],
@@ -220,14 +184,6 @@ export const getSubsequentNeighboringCell = (
 interface UniqueMoves {
   [key: string]: boolean;
 }
-
-const cellToString = (cell: Cell) => {
-  return `${cell.x}-${cell.y}`;
-};
-
-const createMoveString = (cell1: Cell, cell2: Cell) => {
-  return `${cellToString(cell1)}-${cellToString(cell2)}`;
-};
 
 const calculateOutsideSidesInRegion = (cells: Cell[], size: Size) => {
   let outsideSides = 4;

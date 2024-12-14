@@ -1,17 +1,9 @@
 import { Direction } from 'readline';
-import { Cell, Direction8Points } from './4';
 import path from 'path';
 import { sumOfArray } from './1';
 import { readInput, splitStringAtEOL } from '../helpers/readFile';
 import { deepEqual } from '../helpers/deepEqual';
-
-export type MapLines = string[];
-export enum Direction4Points {
-  NORTH,
-  EAST,
-  SOUTH,
-  WEST,
-}
+import { Cell, Direction4Points, MapLines } from '../helpers/map';
 
 export interface GuardPosition {
   position: Cell;
@@ -128,7 +120,6 @@ export const findNextObstacleOrExitAndUpdateMap = (
         `unhandled case? direction=${direction}, position: {${position.x},${position.y}}`
       );
   }
-  throw new Error("shouldn't be getting here");
 };
 
 export const getNextDirection = (
