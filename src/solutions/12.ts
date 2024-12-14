@@ -17,7 +17,7 @@ import { Direction4PointsArray } from './10';
 export interface GardenRegionSpecs {
   area: number;
   perimeter: number;
-  sides: number;
+  sides?: number;
 }
 
 export interface GardenRegionSpecsMap {
@@ -45,6 +45,22 @@ export const findFirstCellNotInMap = (
   return undefined;
 };
 
+export const findFirstCellInCellsButNotInMap = (
+  size: Size,
+  cells: Cell[],
+  allMappedCells: GardenRegionCells
+): Cell | undefined => {
+  if (Object.keys(allMappedCells).length >= cells.length) {
+    return undefined;
+  }
+  for (const cell of cells) {
+    if (!(cellToString(cell) in allMappedCells)) {
+      return cell;
+    }
+  }
+  return undefined;
+};
+
 export const directionChangeMeansAdditionalSides = (
   direction1: Direction4Points,
   direction2: Direction4Points
@@ -63,8 +79,8 @@ interface RecursivelyGetRegionCellsProps {
   size: Size;
   thisRegion: GardenRegionCells;
   allMappedCells: GardenRegionCells;
-  mapLines: string[];
   characterToFind: RegExp;
+  shouldContinue: (nextPosition: Cell) => boolean;
 }
 
 export const recursivelyGetRegionCells = ({
@@ -72,8 +88,8 @@ export const recursivelyGetRegionCells = ({
   size,
   thisRegion,
   allMappedCells,
-  mapLines,
   characterToFind,
+  shouldContinue,
 }: RecursivelyGetRegionCellsProps): void => {
   const uniqueKey = `${position.x}-${position.y}`;
   if (!(uniqueKey in allMappedCells)) {
@@ -91,7 +107,7 @@ export const recursivelyGetRegionCells = ({
     const nextUniqueKey = `${nextPosition.x}-${nextPosition.y}`;
     if (
       !isInMap(nextPosition, size) ||
-      !mapLines[nextPosition.y][nextPosition.x].match(characterToFind) ||
+      shouldContinue(nextPosition) ||
       nextUniqueKey in allMappedCells
     ) {
       continue;
@@ -102,8 +118,8 @@ export const recursivelyGetRegionCells = ({
       size,
       thisRegion,
       allMappedCells,
-      mapLines,
       characterToFind,
+      shouldContinue,
     });
   }
 };
@@ -229,33 +245,165 @@ const calculateOutsideSidesInRegion = (cells: Cell[], size: Size) => {
   return outsideSides;
 };
 
-const calculateInsideSidesInRegion = (cells: Cell[], size: Size): number => {
-  // TO FIND INSIDE SIDES
-  // 1. find biggest possible Donuts
+interface Donut {
+  tl: Cell;
+  tr: Cell;
+  br: Cell;
+  bl: Cell;
+}
 
+export const findAllDonuts = (cells: GardenRegionCells, size: Size) => {
+  const allDonuts: Donut[] = [];
+  for (const key in cells) {
+    const cell = cells[key];
+    for (let x = 1; x < size.width - cell.x; ++x) {
+      for (let y = 1; y < size.height - cell.y; ++y) {
+        const possibleDonut: Donut = {
+          tl: cell,
+          tr: { x: cell.x + x, y: cell.y },
+          br: { x: cell.x + x, y: cell.y + y },
+          bl: { x: cell.x, y: cell.y + y },
+        };
+        let isDonut = true;
+        for (let i = 1; i <= x; ++i) {
+          if (
+            !(
+              cellToString({ x: cell.x + i, y: cell.y }) in cells &&
+              cellToString({ x: cell.x + i, y: cell.y + y }) in cells
+            )
+          ) {
+            isDonut = false;
+            break;
+          }
+        }
+        for (let j = 1; j <= y; ++j) {
+          if (
+            !(
+              cellToString({ x: cell.x, y: cell.y + j }) in cells &&
+              cellToString({ x: cell.x + x, y: cell.y + j }) in cells
+            )
+          ) {
+            isDonut = false;
+            break;
+          }
+        }
+        if (isDonut && x > 1 && y > 1) {
+          allDonuts.push(possibleDonut);
+        }
+      }
+    }
+  }
+  return allDonuts;
+};
+
+const getCellsInsideDonut = (donut: Donut) => {
+  const insideCells: Cell[] = [];
+  for (let i = 1; i < donut.tr.x - donut.tl.x; ++i) {
+    for (let j = 1; j < donut.br.y - donut.tr.y; ++j) {
+      insideCells.push({ x: donut.tl.x + i, y: donut.tl.y + j });
+    }
+  }
+  return insideCells;
+};
+
+const getCellsNotInRegion = (cells: Cell[], region: GardenRegionCells) => {
+  const nonRegionCells: Cell[] = [];
+  for (let i = 0; i < cells.length; ++i) {
+    if (cellToString(cells[i]) in region) {
+      continue;
+    }
+    nonRegionCells.push(cells[i]);
+  }
+  return nonRegionCells;
+};
+
+const calculateInsideSidesInRegion = (
+  cells: GardenRegionCells,
+  size: Size
+): number => {
+  // TO FIND INSIDE SIDES
+  // 1. find all donuts
   // 2. for all donuts, get cells inside them
   // 3. determine which cells inside them aren't part of the region
-  // 4. group those cells into regions
-  // 5. get outside sides of those cells
+  // 4. group those cells into unique regions (unduplicated by donuts)
+  // 5. get outside sides of those regions
+  let insideSides = 0;
 
-  return 0;
+  const allDonuts = findAllDonuts(cells, size);
+  if (allDonuts.length === 0) {
+    return 0;
+  }
+  const nonRegionRegions: GardenRegionSpecsMap = {};
+  for (const donut of allDonuts) {
+    const insideCells = getCellsInsideDonut(donut);
+    const nonRegionCells = getCellsNotInRegion(insideCells, cells);
+
+    let position: Cell | undefined = nonRegionCells[0];
+    const characterToFindRegex = new RegExp(/\w/);
+    const allMappedCells: GardenRegionCells = {};
+
+    let i = 0;
+    while (position !== undefined) {
+      const thisRegion: GardenRegionCells = {};
+      recursivelyGetRegionCells({
+        position,
+        size,
+        thisRegion,
+        allMappedCells,
+        characterToFind: characterToFindRegex,
+        shouldContinue: (nextPosition: Cell) =>
+          !nonRegionCells.some((c) => deepEqual(c, nextPosition)),
+      });
+      const infosForRegion = calculateInfosForGardenRegion(
+        thisRegion,
+        size,
+        true
+      );
+      if (position) {
+        nonRegionRegions[cellToString(position)] = [infosForRegion];
+      }
+      position = findFirstCellInCellsButNotInMap(
+        size,
+        nonRegionCells,
+        allMappedCells
+      );
+    }
+  }
+  for (const key in nonRegionRegions) {
+    const allRegions = nonRegionRegions[key];
+    for (const region of allRegions) {
+      if (region.sides) {
+        insideSides += region.sides;
+      }
+    }
+  }
+
+  return insideSides;
 };
 
 export const calculateNumberSidesInRegion = (
-  cells: Cell[],
-  size: Size
+  cells: GardenRegionCells,
+  size: Size,
+  outsideSidesOnly: boolean
 ): number => {
-  if (cells.length <= 2) {
+  if (Object.keys(cells).length <= 2) {
     return 4;
   }
-  const outsideSides = calculateOutsideSidesInRegion(cells, size);
-  const insideSides = calculateInsideSidesInRegion(cells, size);
+  const outsideSides = calculateOutsideSidesInRegion(
+    Object.values(cells),
+    size
+  );
+  const insideSides = outsideSidesOnly
+    ? 0
+    : calculateInsideSidesInRegion(cells, size);
   return outsideSides + insideSides;
 };
 
 const calculateInfosForGardenRegion = (
   cells: GardenRegionCells,
-  size: Size
+  size: Size,
+  calculateSides: boolean,
+  outsideSidesOnly: boolean = false
 ): GardenRegionSpecs => {
   const cellsArray = Object.values(cells);
   const perimeters = cellsArray.map((cell, i) =>
@@ -265,11 +413,16 @@ const calculateInfosForGardenRegion = (
   return {
     area: Object.keys(cells).length,
     perimeter: sumOfArray(perimeters),
-    sides: calculateNumberSidesInRegion(cellsArray, size),
+    sides: calculateSides
+      ? calculateNumberSidesInRegion(cells, size, outsideSidesOnly)
+      : 0,
   };
 };
 
-export const getAllRegionInfo = (lines: string[]) => {
+export const getAllRegionInfo = (
+  lines: string[],
+  calculateSides: boolean = false
+) => {
   const size = getMapSize(lines);
   const allCells: GardenRegionCells = {};
   const regionSpecsMap: GardenRegionSpecsMap = {};
@@ -278,16 +431,22 @@ export const getAllRegionInfo = (lines: string[]) => {
   while (position !== undefined) {
     const characterToFind = lines[position.y][position.x];
     const thisRegion: GardenRegionCells = {};
-    const sides = recursivelyGetRegionCells({
+    recursivelyGetRegionCells({
       position,
       size,
       thisRegion,
       allMappedCells: allCells,
-      mapLines: lines,
       characterToFind: new RegExp(characterToFind),
+      shouldContinue: (nextPosition: Cell) => {
+        return !lines[nextPosition.y][nextPosition.x].match(characterToFind);
+      },
     });
     position = findFirstCellNotInMap(size, allCells);
-    const infosForRegion = calculateInfosForGardenRegion(thisRegion, size);
+    const infosForRegion = calculateInfosForGardenRegion(
+      thisRegion,
+      size,
+      calculateSides
+    );
 
     if (characterToFind in regionSpecsMap) {
       regionSpecsMap[characterToFind].push(infosForRegion);
@@ -306,17 +465,21 @@ export const getGardenFencePriceInfo = (
   for (const key in regionSpecsMap) {
     const regions = regionSpecsMap[key];
     const priceForTheseRegions = regions.map(
-      (r) => r.area * (calcWithPerimeter ? r.perimeter : r.sides)
+      (r) => r.area * (calcWithPerimeter ? r.perimeter : (r.sides ?? 0))
     );
     totalPrice += sumOfArray(priceForTheseRegions);
   }
   return totalPrice;
 };
 
-export const solution12_1 = async () => {
+export const solution12_1 = async (usePerimeter: boolean = true) => {
   const input = await readInput('../data/12_input.txt');
   const lines = splitStringAtEOL(input);
-  const regionInfo = getAllRegionInfo(lines);
-  const totalPrice = getGardenFencePriceInfo(regionInfo);
+  const regionInfo = getAllRegionInfo(lines, !usePerimeter);
+  const totalPrice = getGardenFencePriceInfo(regionInfo, usePerimeter);
   return totalPrice;
+};
+
+export const solution12_2 = async () => {
+  return await solution12_1(false);
 };
