@@ -18,6 +18,22 @@ EEEC`,
     expectedPriceWithSides: 80,
   },
   {
+    input: `EEEEE
+EXXXX
+EEEEE
+EXXXX
+EEEEE`,
+    expectedRegion: {
+      E: [{ perimeter: 36, area: 17 }],
+      X: [
+        { perimeter: 10, area: 4 },
+        { perimeter: 10, area: 4 },
+      ],
+    },
+    expectedPriceWithPerimeter: undefined,
+    expectedPriceWithSides: 236,
+  },
+  {
     input: `OOOOO
 OXOXO
 OOOOO
@@ -38,7 +54,7 @@ OOOOO`,
 ];
 
 test.each(inputs)(
-  'get correct perimeters, areas, prices',
+  'get correct perimeters, areas, prices, %s',
   ({
     input,
     expectedRegion,
@@ -48,9 +64,11 @@ test.each(inputs)(
     const lines = splitStringAtEOL(input);
     const regionInfo = getAllRegionInfo(lines);
     expect(regionInfo).toMatchObject(expectedRegion);
-    const totalPriceWithPerimeter = getGardenFencePriceInfo(regionInfo);
-    expect(totalPriceWithPerimeter).toBe(expectedPriceWithPerimeter);
-    // const totalPriceWithSides = getGardenFencePriceInfo(regionInfo, false);
-    // expect(totalPriceWithSides).toBe(expectedPriceWithSides);
+    if (expectedPriceWithPerimeter) {
+      const totalPriceWithPerimeter = getGardenFencePriceInfo(regionInfo);
+      expect(totalPriceWithPerimeter).toBe(expectedPriceWithPerimeter);
+    }
+    const totalPriceWithSides = getGardenFencePriceInfo(regionInfo, false);
+    expect(totalPriceWithSides).toBe(expectedPriceWithSides);
   }
 );
